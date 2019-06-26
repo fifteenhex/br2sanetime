@@ -1,0 +1,1 @@
+source "$BR2_EXTERNAL_SANETIME_PATH/package/sanetime/Config.in"
