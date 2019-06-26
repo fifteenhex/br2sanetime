@@ -4,7 +4,22 @@
 #
 
 start() {
-	/bin/date -u -s"`cat /etc/buildtime`" > /dev/null
+	# check if the rtc is already ahead,
+	# only set it if it's in the past
+	BUILD_TIME=`cat /etc/buildtime`
+	BUILD_EPOCH=`date --date "$BUILD_TIME" +%s`;
+	RTC_EPOCH=`cat /sys/class/rtc/rtc0/since_epoch`;
+	if [ $BUILD_EPOCH -gt $RTC_EPOCH ]; then
+		# set the date using the buildtime
+		/bin/date -u -s"`cat /etc/buildtime`" > /dev/null
+		# save it into the rtc
+		/sbin/hwclock -w
+	fi
+}
+
+stop() {
+	# save the time into the rtc as ntp might have fixed it up
+	/sbin/hwclock -w
 }
 
 case "$1" in
@@ -12,6 +27,7 @@ case "$1" in
   	start
 	;;
   stop)
+	stop
 	;;
   restart|reload)
 	;;
