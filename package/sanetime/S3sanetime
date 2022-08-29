@@ -8,7 +8,7 @@ start() {
 	# only set it if it's in the past
 	BUILD_TIME=`cat /etc/buildtime`
 	BUILD_EPOCH=`date --date "$BUILD_TIME" +%s`;
-	RTC_EPOCH=`cat /sys/class/rtc/rtc0/since_epoch`;
+	RTC_EPOCH=`cat /sys/class/rtc/rtc0/since_epoch 2> /dev/null || echo 0`;
 	if [ $BUILD_EPOCH -gt $RTC_EPOCH ]; then
 		# set the date using the buildtime
 		/bin/date -u -s"`cat /etc/buildtime`" > /dev/null
